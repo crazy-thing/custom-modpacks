@@ -1,0 +1,28 @@
+.confirm-delete {
+    display: flex;
+    flex-direction: column;
+    background: #0c0c0c;
+    width: 15%;
+    height: fit-content;
+    gap: .7rem;
+    padding: 1rem;
+    border-radius: 14px;
+}
+
+.confirm-delete-header {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.confirm-delete-body {
+    font-weight: lighter;
+    font-size: 16px;
+}
+
+.confirm-delete-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5%;
+}

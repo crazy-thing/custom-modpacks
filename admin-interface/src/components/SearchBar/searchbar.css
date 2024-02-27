@@ -1,0 +1,20 @@
+.searchbar {
+    position: relative;
+    left: 496px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    width: 410px;
+    height: 85%;
+    gap: 8px;
+    border: 1px solid #fff;
+    border-radius: 2px;
+    font-size: 16px;
+    padding: 0;
+    padding-left: 1%;
+
+    background-color: #0c0c0c;
+    transition: background 0.1s ease-in;
+}

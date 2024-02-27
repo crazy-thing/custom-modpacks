@@ -1,0 +1,76 @@
+.modpack {
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background-color: black;
+    margin: 1rem;
+
+    box-shadow: 0 0 0 transparent;
+    transition: box-shadow .08s ease-in;
+}
+
+.modpack:hover {
+    box-shadow: 0 0 0 2px #ffffff;
+}
+
+.modpack-thumbnail {
+    width: 100%;
+    height: 100%;
+}
+
+.modpack-content {
+    display: flex;
+    flex-direction: column;
+    width: 92%;
+    padding: 4%;
+    gap: 1em;
+    height: 100%;
+}
+
+.modpack-content-name-version {
+    display: flex;
+    flex-direction: row;
+    gap: 5%;
+    align-items: center;
+}
+
+.modpack-content-name {
+
+}
+
+.modpack-content-version {
+    font-size: 14px;
+    color: #9F9F9F;
+}
+
+.modpack-content-description {
+    font-size: 14px;
+    height: 80px;
+    width: 100%;
+
+    overflow-y: auto;
+
+}
+
+.modpack-content-description-text {
+    white-space: wrap;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+
+}
+
+.modpack-content-zip {
+    width: fit-content;
+}
+
+.modpack-content-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modpack-content-buttons-delete {
+    cursor: pointer;
+}

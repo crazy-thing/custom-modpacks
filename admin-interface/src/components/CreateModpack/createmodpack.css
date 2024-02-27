@@ -1,0 +1,72 @@
+.create-modpack {
+    display: flex;
+    flex-direction: column;
+    width: 606px;
+    height: fit-content;
+    background: #0c0c0c;
+    padding: 1.2rem;
+    border-radius: 10px;
+}
+
+.create-modpack-header {
+    font-family: var(--font-family);
+    margin: 0;
+    font-size: 32px!important;
+    font-weight: bold;
+}
+
+.create-modpack-header, .create-modpack-info-inputs-headers, .create-modpack-description-header, .create-modpack-file-upload-header {
+    margin-bottom: 1.5%;
+    font-size: 20px;
+}
+
+.create-modpack-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: fit-content;
+    height: fit-content;
+}
+
+.create-modpack-info-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.create-modpack-info-inputs {
+    display: flex;
+    flex-direction: row;
+    padding-right: 2%;
+}
+
+.create-modpack-info-inputs-container {
+    display: flex;
+    flex-direction: column;
+    margin: 3%;
+}
+
+.create-modpack-info-inputs-headers {
+    justify-self: start;
+    font-family: var(--font-family);
+    font-size: 20px;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 2%;
+}
+
+.create-modpack-description {
+    margin-bottom: 2.5%;
+}
+
+.create-modpack-file-upload {
+    height: 100%;
+}
+
+.create-modpack-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 5%;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding-top: 4%;
+}
