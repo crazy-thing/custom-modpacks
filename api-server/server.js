@@ -22,7 +22,7 @@ checkConfigFile(() => {
         app.use(cors());
         app.use(config.apiUrl, modPackRouter);
         app.use('/uploads', express.static('uploads'));
-        app.use('/config', express.static('./config.json')); // change from config.json to ./build/config.json for production
+        app.use('/config', express.static('./build/config.json')); // change from config.json to ./build/config.json for production
 
         await connectToDatabase(config, () => {
             app.use(express.static('build'));

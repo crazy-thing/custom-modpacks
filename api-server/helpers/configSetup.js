@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 
-const configFilePath = path.join(process.cwd(), 'config.json'); // change from config.json to ./build/config.json for production
+const configFilePath = path.join(process.cwd(), './build/config.json'); // change from config.json to ./build/config.json for production
 
 const checkConfigFile = (callback) => {
     if (fs.existsSync(configFilePath)) {
