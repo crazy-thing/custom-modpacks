@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { InputBox, ImageUpload, FileUpload, Button, DropDown} from '../exports';
 import { uploadModpack, editModpack } from '../../util/api';
-import { getFabricLoaders } from '../../util/fabricApi';
 import { getVanillaVersions } from '../../util/vanillaApi';
 import './createmodpack.css';
-
+import { fabricIcon, forgeIcon } from '../../assets/exports';
 
 const CreateModpack = ({ close, modpack, isEdit, baseUrl, uploadsUrl }) => {
   const expressServerAdd = uploadsUrl;
@@ -13,14 +12,17 @@ const CreateModpack = ({ close, modpack, isEdit, baseUrl, uploadsUrl }) => {
     name: '',
     version: '',
     mcVersion: '',
-    fabricVersion: '',
+    modLoader: '',
+    modName: '',
     description: '',
     thumbnail: '',
     modpack: '',
     size: '',
   });
-  const [fabricLoaders, setFabricLoaders] = useState([]);
+  
+
   const [vanillaVersions, setVanillaVersions] = useState([]);
+  const [activeModName, setActiveModName] = useState('Fabric'); // Default to Fabric
 
   const handleInputChange = (fieldName, value) => {
     setModpackInfo((prevValues) => ({
@@ -45,15 +47,19 @@ const CreateModpack = ({ close, modpack, isEdit, baseUrl, uploadsUrl }) => {
     }
   };
 
+  const toggleModLoader = () => {
+    const newLoaderName = activeModName === 'Fabric' ? 'Forge' : 'Fabric'
+    handleInputChange('modName', newLoaderName);
+    setActiveModName(newLoaderName);
+  };
+
   const fetchOptions = async () => {
     try {
       const vanVersions = await getVanillaVersions();
-      const fabLoaders = await getFabricLoaders();
 
       setVanillaVersions(vanVersions);
-      setFabricLoaders(fabLoaders);
     } catch (error) {
-      console.error('Error fetching fabric versions: ', error);
+      console.error('Error fetching vanilla versions: ', error);
     }
   };
 
@@ -62,6 +68,7 @@ const CreateModpack = ({ close, modpack, isEdit, baseUrl, uploadsUrl }) => {
 
     if (isEdit) {
       setModpackInfo(modpack);
+      setActiveModName(modpack.modName);
     }
   }, []);
 
@@ -114,15 +121,23 @@ const CreateModpack = ({ close, modpack, isEdit, baseUrl, uploadsUrl }) => {
               />
             </div>
             <div className='create-modpack-info-inputs-container'>
-              <p className='create-modpack-info-inputs-headers'>Fabric Version</p>
-              <DropDown
+              <div className='create-modpack-info-inputs-headers-container'>
+              <p className='create-modpack-info-inputs-headers'>{activeModName} Version</p>
+                <img 
+                  src={activeModName === 'Fabric' ? fabricIcon : forgeIcon}
+                  alt={activeModName === 'Fabric' ? 'Fabric' : 'Forge'}
+                  onClick={toggleModLoader}
+                  width={24}
+                  height={24}
+                />
+              </div>
+              <InputBox
                 width={200}
                 height={20}
                 fontSize='16px'
-                placeHolder='Enter Fabric version'
-                value={modpackInfo.fabricVersion}
-                onChange={(value) => handleInputChange('fabricVersion', value)}
-                options={fabricLoaders}
+                placeHolder='Enter Mod Loader'
+                value={modpackInfo.modLoader}
+                onChange={(value) => handleInputChange('modLoader', value)}
               />
             </div>
           </div>

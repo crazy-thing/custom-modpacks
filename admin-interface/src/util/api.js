@@ -5,7 +5,8 @@ const createFormData = (modpack) => {
     formData.append('version', modpack.version);
     formData.append('description', modpack.description);
     formData.append('mcVersion', modpack.mcVersion);
-    formData.append('fabricVersion', modpack.fabricVersion);
+    formData.append('modLoader', modpack.modLoader);
+    formData.append('modName', modpack.modName);
     formData.append('modpack', modpack.modpack);
     formData.append('thumbnail', modpack.thumbnail);
     formData.append('size', modpack.size);

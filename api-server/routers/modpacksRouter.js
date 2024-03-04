@@ -37,14 +37,14 @@ router.get('/', async (req, res) => {
     { name: 'thumbnail', maxCount: 1}
   ]), async (req, res) => {
     const id = Date.now();
-    const {name, version, description, fabricVersion, mcVersion, size} = req.body;
+    const {name, version, description, modLoader, modName, mcVersion, size} = req.body;
     
     try {
   
       const modpack = req.files['modpack'][0].filename;
       const thumbnail = req.files['thumbnail'][0].filename;
   
-      const newModpack = new Modpack({ id, name, description, version, modpack, size, thumbnail, fabricVersion, mcVersion });
+      const newModpack = new Modpack({ id, name, description, version, modpack, size, thumbnail, modLoader, modName, mcVersion });
       await newModpack.save();
   
       res.status(201).json({ message: 'Files uploaded successfully' });

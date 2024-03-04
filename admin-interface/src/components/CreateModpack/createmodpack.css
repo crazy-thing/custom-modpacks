@@ -45,6 +45,17 @@
     margin: 3%;
 }
 
+.create-modpack-info-inputs-headers-container {
+    display: flex;
+    flex-direction: row;
+    align-items: top;
+    gap: 15%;
+}
+
+.create-modpack-info-inputs-headers-container img:hover {
+    cursor: pointer;
+}
+
 .create-modpack-info-inputs-headers {
     justify-self: start;
     font-family: var(--font-family);

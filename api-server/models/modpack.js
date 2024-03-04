@@ -33,7 +33,11 @@ const modpackSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    fabricVersion: {
+    modLoader: {
+        type: String,
+        required: true,
+    },
+    modName: {
         type: String,
         required: true,
     },
