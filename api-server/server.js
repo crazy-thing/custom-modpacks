@@ -42,10 +42,7 @@ checkConfigFile(() => {
 const connectToDatabase = async (config, callback) => {
     try {
         console.log("Attempting to connect to MongoDB. This may take a minute...")
-        await mongoose.connect(config.dbAddr, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
+        await mongoose.connect(config.dbAddr);
         console.log('Connected to MongoDB');
         callback();
     } catch (error) {

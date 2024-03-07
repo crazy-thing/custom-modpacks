@@ -1,11 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './dropdown.css';
 
-const DropDown = ({ width = 'auto', height = 'auto', fontSize = 'inherit', options = [], value, onChange }) => {
+const DropDown = ({ width = 'auto', height = 'auto', fontSize = 'inherit', options = [], value, onChange, isVersions, versions, toggleShowCreateVersion }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropDownRef = useRef(null);
 
     const handleOptionsClick = (option) => {
+        if (isVersions)
+        {
+
+            setIsOpen(false);
+            return;
+        }
         onChange(option);
         setIsOpen(false);
     };
@@ -30,23 +36,45 @@ const DropDown = ({ width = 'auto', height = 'auto', fontSize = 'inherit', optio
     }, []);
 
     return (
-        <div className={`dropdown ${isOpen ? 'open' : ''}`} style={dropDownBoxStyle} ref={dropDownRef}>
-            <div className='dropdown-selected-option' onClick={() => setIsOpen(!isOpen)}>
-                {value || 'Select a version'}
+        <>
+        {isVersions ? ( 
+            <div className={`dropdown ${isOpen ? 'open' : ''}`} style={dropDownBoxStyle} ref={dropDownRef} onClick={() => setIsOpen(!isOpen)}>
+            <div className='dropdown-selected-option'>
+                {value || 'View Versions'}
                 <span className={`dropdown-arrow ${isOpen ? 'open' : ''}`}> &#9660; </span>
             </div>
             <div className={`dropdown-options ${isOpen ? 'open' : ''}`}>
-                {options.map((option) => (
+                {versions.map((version) => (
                     <div
-                        key={option}
-                        className={`dropdown-options-option ${option === value ? 'selected' : ''}`}
-                        onClick={() => handleOptionsClick(option)}
+                        key={version.id}
+                        className={`dropdown-options-option ${version === value ? 'selected' : ''}`}
+                        onClick={() => toggleShowCreateVersion(version)}
                     >
-                        {option}
+                        {version.name}
                     </div>
                 ))}
             </div>
         </div>
+        ) : (
+            <div className={`dropdown ${isOpen ? 'open' : ''}`} style={dropDownBoxStyle} ref={dropDownRef} onClick={() => setIsOpen(!isOpen)}>
+                <div className='dropdown-selected-option'>
+                    {value || 'Select a version'}
+                    <span className={`dropdown-arrow ${isOpen ? 'open' : ''}`}> &#9660; </span>
+                </div>
+                <div className={`dropdown-options ${isOpen ? 'open' : ''}`}>
+                    {options.map((option, index) => (
+                        <div
+                            key={index}
+                            className={`dropdown-options-option ${option === value ? 'selected' : ''}`}
+                            onClick={() => handleOptionsClick(option)}
+                        >
+                            {option}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )}
+        </>
     );
 };
 

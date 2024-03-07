@@ -2,11 +2,11 @@ import React from 'react';
 import { fileIcon, deleteIcon } from '../../assets/exports';
 import './uploadedfile.css';
 
-const UploadedFile = ({ uploadedModpack, removeModpack, progress, noEdit }) => {
+const UploadedFile = ({ uploadedVersion, removeVersion, progress, noEdit }) => {
 
-  const modpackSize = () => {
+  const versionSize = () => {
     try {
-      let size = uploadedModpack.size;
+      let size = parseFloat(uploadedVersion.size);
       const suffixes = ['KB', 'MB', 'GB'];
 
       let i = -1;
@@ -17,7 +17,7 @@ const UploadedFile = ({ uploadedModpack, removeModpack, progress, noEdit }) => {
 
       return `(${size.toFixed(2)} ${suffixes[i]})`;
     } catch (error) {
-      console.error('Failed to calculate modpack zip file size: ', error);
+      console.error('Failed to calculate version zip file size: ', error);
     }
   };
 
@@ -28,7 +28,7 @@ const UploadedFile = ({ uploadedModpack, removeModpack, progress, noEdit }) => {
           <img src={fileIcon} alt='File Icon' width={24} height={26} />
           <div className='uploaded-file-content'>
             <div className='uploaded-file-content-info'>
-              <p className='uploaded-file-content-info-text'>{uploadedModpack.modpack} {modpackSize()}</p>
+              <p className='uploaded-file-content-info-text'>{uploadedVersion.zip} {versionSize()}</p>
             </div>
           </div>
         </div>
@@ -37,8 +37,8 @@ const UploadedFile = ({ uploadedModpack, removeModpack, progress, noEdit }) => {
           <img src={fileIcon} alt='File Icon' width={30} height={38} />
           <div className='uploaded-file-content'>
             <div className='uploaded-file-content-info'>
-              <p className='uploaded-file-content-info-text'>{uploadedModpack.modpack} {modpackSize()}</p>
-              <img className='uploaded-file-content-info-delete' src={deleteIcon} alt='Delete Icon' width={20} height={21} onClick={removeModpack} />
+              <p className='uploaded-file-content-info-text'>{uploadedVersion.zip} {versionSize()}</p>
+              <img className='uploaded-file-content-info-delete' src={deleteIcon} alt='Delete Icon' width={20} height={21} onClick={removeVersion} />
             </div>
             <progress value={progress} max='100' className='uploaded-file-progress'>
               {progress}%

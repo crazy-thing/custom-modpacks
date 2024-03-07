@@ -1,76 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { InputBox, ImageUpload, FileUpload, Button, DropDown} from '../exports';
-import { uploadModpack, editModpack } from '../../util/api';
-import { getVanillaVersions } from '../../util/vanillaApi';
+import React from 'react';
+import { InputBox, ImageUpload, Button, DropDown} from '../exports';
 import './createmodpack.css';
-import { fabricIcon, forgeIcon } from '../../assets/exports';
 
-const CreateModpack = ({ close, modpack, isEdit, baseUrl, uploadsUrl }) => {
+const CreateModpack = ({ close, modpack, isEdit, uploadsUrl, toggleShowCreateVersion, handleInputChange, handleCreate }) => {
   const expressServerAdd = uploadsUrl;
-
-  const [modpackInfo, setModpackInfo] = useState({
-    name: '',
-    version: '',
-    mcVersion: '',
-    modLoader: '',
-    modName: '',
-    description: '',
-    thumbnail: '',
-    modpack: '',
-    size: '',
-  });
-  
-
-  const [vanillaVersions, setVanillaVersions] = useState([]);
-  const [activeModName, setActiveModName] = useState('Fabric'); // Default to Fabric
-
-  const handleInputChange = (fieldName, value) => {
-    setModpackInfo((prevValues) => ({
-      ...prevValues,
-      [fieldName]: value,
-    }));
-  };
-
-  const handleCreate = async () => {
-    try {
-      let res;
-      if (isEdit) {
-        res = await editModpack(modpackInfo, baseUrl);
-      } else {
-        res = await uploadModpack(modpackInfo, baseUrl);
-      }
-      console.log('Modpack uploaded successfully: ', res);
-    } catch (error) {
-      console.error('Error uploading modpack: ', error);
-    } finally {
-      close(null);
-    }
-  };
-
-  const toggleModLoader = () => {
-    const newLoaderName = activeModName === 'Fabric' ? 'Forge' : 'Fabric'
-    handleInputChange('modName', newLoaderName);
-    setActiveModName(newLoaderName);
-  };
-
-  const fetchOptions = async () => {
-    try {
-      const vanVersions = await getVanillaVersions();
-
-      setVanillaVersions(vanVersions);
-    } catch (error) {
-      console.error('Error fetching vanilla versions: ', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchOptions();
-
-    if (isEdit) {
-      setModpackInfo(modpack);
-      setActiveModName(modpack.modName);
-    }
-  }, []);
 
   return (
     <div className='create-modpack'>
@@ -83,64 +16,25 @@ const CreateModpack = ({ close, modpack, isEdit, baseUrl, uploadsUrl }) => {
           height={160}
         />
         <div className='create-modpack-info-container'>
-          <div className='create-modpack-info-inputs'>
-            <div className='create-modpack-info-inputs-container'>
               <p className='create-modpack-info-inputs-headers'>Modpack Name</p>
               <InputBox
                 width={200}
                 height={20}
                 fontSize='16px'
                 placeHolder='Enter modpack name'
-                value={modpackInfo.name}
+                value={modpack.name}
                 onChange={(value) => handleInputChange('name', value)}
               />
-            </div>
-            <div className='create-modpack-info-inputs-container'>
-              <p className='create-modpack-info-inputs-headers'>Modpack Version</p>
-              <InputBox
-                width={200}
-                height={20}
-                fontSize='16px'
-                placeHolder='Enter modpack version'
-                value={modpackInfo.version}
-                onChange={(value) => handleInputChange('version', value)}
-              />
-            </div>
-          </div>
-          <div className='create-modpack-info-inputs'>
-            <div className='create-modpack-info-inputs-container'>
-              <p className='create-modpack-info-inputs-headers'>Minecraft Version</p>
               <DropDown
                 width={200}
                 height={20}
                 fontSize='16px'
-                placeHolder='Enter Minecraft version'
-                value={modpackInfo.mcVersion}
-                onChange={(value) => handleInputChange('mcVersion', value)}
-                options={vanillaVersions}
+                versions={modpack.versions}
+                isVersions={true}
+                toggleShowCreateVersion={toggleShowCreateVersion}
               />
-            </div>
-            <div className='create-modpack-info-inputs-container'>
-              <div className='create-modpack-info-inputs-headers-container'>
-              <p className='create-modpack-info-inputs-headers'>{activeModName} Version</p>
-                <img 
-                  src={activeModName === 'Fabric' ? fabricIcon : forgeIcon}
-                  alt={activeModName === 'Fabric' ? 'Fabric' : 'Forge'}
-                  onClick={toggleModLoader}
-                  width={24}
-                  height={24}
-                />
-              </div>
-              <InputBox
-                width={200}
-                height={20}
-                fontSize='16px'
-                placeHolder='Enter Mod Loader'
-                value={modpackInfo.modLoader}
-                onChange={(value) => handleInputChange('modLoader', value)}
-              />
-            </div>
-          </div>
+              <Button width={194} height={20} text='Add Version' fontSize='14px' type='confirm' onClick={toggleShowCreateVersion} />
+
         </div>
       </div>
       <div className='create-modpack-description'>
@@ -151,20 +45,23 @@ const CreateModpack = ({ close, modpack, isEdit, baseUrl, uploadsUrl }) => {
           height={140}
           fontSize='16px'
           placeHolder='Enter modpack description'
-          value={modpackInfo.description}
+          value={modpack.description}
           onChange={(value) => handleInputChange('description', value)}
         />
       </div>
-      <div className='create-modpack-file-upload'>
-        <p className='create-modpack-file-upload-header'>Modpack Zip File</p>
-        <FileUpload onChange={handleInputChange} modpack={modpack} />
-      </div>
+
       <div className='create-modpack-buttons'>
         <Button width={90} height={27} text='Cancel' fontSize='14px' type='cancel' onClick={() => close(null)} />
         <Button width={90} height={27} text={isEdit ? 'Save' : 'Create'} fontSize='14px' type='confirm' onClick={handleCreate} />
       </div>
     </div>
   );
-};
+  };
+
+
+
+
+
 
 export default CreateModpack;
+

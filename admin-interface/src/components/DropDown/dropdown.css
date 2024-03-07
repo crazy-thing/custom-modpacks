@@ -1,5 +1,5 @@
 .dropdown {
-    z-index: 1000;
+    z-index: 100;
     width: 100%;
     height: 100%;
     background: #3F3F3F;
@@ -23,11 +23,13 @@
 .dropdown-selected-option {
     display: flex;
     align-items: center;
+    height: 100%;
     justify-content: space-between;
     padding-right: 5%;
 }
 
 .dropdown-options {
+    position: relative;
     margin-left: -5%;
     margin-top: 6.5%;
     max-height: 0;

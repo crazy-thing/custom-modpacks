@@ -4,165 +4,172 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const Modpack = require('../models/modpack');
-const {deleteFiles} = require('../helpers/deleteFiles');
+const { deleteFiles } = require('../helpers/deleteFiles');
+
+
+// add way to download zip files based off version and modpack id
 
 const uploadsPath = path.join(process.cwd(), '/uploads');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-      cb(null, 'uploads/');
+        cb(null, 'uploads/');
     },
     filename: function(req, file, cb) {
-      cb(null, file.originalname);
+        cb(null, file.originalname);
     }
-  });
-  
+});
+
 const upload = multer({ storage: storage });
 
 // Get all modpacks
 router.get('/', async (req, res) => {
     try {
-      const modpacks = await Modpack.find();
-      res.json(modpacks);
-  
+        const modpacks = await Modpack.find();
+        res.json(modpacks);
     } catch (error) {
-      console.error('Error fetching mod packs:', error);
-      res.status(500).json({error: 'Error fetching mod packs:', error});
+        console.error('Error fetching mod packs:', error);
+        res.status(500).json({ error: 'Error fetching mod packs:', error });
     }
-  });
-  
-  // Upload modpacks
-  router.post('/', upload.fields([
-    { name: 'modpack', maxCount: 1},
-    { name: 'thumbnail', maxCount: 1}
-  ]), async (req, res) => {
-    const id = Date.now();
-    const {name, version, description, modLoader, modName, mcVersion, size} = req.body;
-    
-    try {
-  
-      const modpack = req.files['modpack'][0].filename;
-      const thumbnail = req.files['thumbnail'][0].filename;
-  
-      const newModpack = new Modpack({ id, name, description, version, modpack, size, thumbnail, modLoader, modName, mcVersion });
-      await newModpack.save();
-  
-      res.status(201).json({ message: 'Files uploaded successfully' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal Server Error. Please confirm that all upload fields are provided.' });
-    }
-  });
+});
 
-  // Edit modpack
-  router.put('/:id', upload.fields([
-    { name: 'modpack', maxCount: 1},
-    { name: 'thumbnail', maxCount: 1}
-  ]), async (req, res) => {
-    const id = req.params.id;
-    
+// Upload modpacks
+router.post('/', upload.any([
+    { name: 'thumbnail', maxCount: 1 },
+    { name: 'versions', maxCount: 100 } 
+]), async (req, res) => {
+    const id = Date.now();
+    const { name, description, versions } = req.body;
+
     try {
         
-        const selectedModpack = await Modpack.findOne({ id: id});
+        const thumbnail = req.files.find(file => file.fieldname === 'thumbnail').filename;
+
+        console.log(req.files)
+        const formattedVersions = versions.map(version => ({
+            name: version.name,
+            id: version.id,
+            zip: version.zip,
+            size: version.size,
+            mcVersion: version.mcVersion,
+            modLoader: version.modLoader,
+            modName: version.modName
+        }));
+
+        const newModpack = new Modpack({
+            id,
+            name,
+            description,
+            versions: formattedVersions,
+            thumbnail
+        });
+        await newModpack.save();
+
+        res.status(201).json({ message: 'Modpack created successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error. Please confirm that all upload fields are provided.' });
+    }
+});
+
+router.put('/:id', upload.any([
+    { name: 'thumbnail', maxCount: 1 },
+    { name: 'versions', maxCount: 100 } 
+]), async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const selectedModpack = await Modpack.findOne({ id: id });
         if (!selectedModpack) {
             return res.status(404).json({ message: 'Modpack not found' });
         }
 
         const updatedModpack = {};
+
         for (const [key, value] of Object.entries(req.body)) {
-          updatedModpack[key] = value;
-        }
-        
-        let oldFiles = [];
-
-        if (req.files) {
-          if (req.files['modpack'] && req.files['modpack'][0]) {
-            updatedModpack.modpack = req.files['modpack'][0].filename;
-            oldFiles.push(selectedModpack.modpack);
-          }
-          if (req.files['thumbnail'] && req.files['thumbnail'][0]) {
-            updatedModpack.thumbnail = req.files['thumbnail'][0].filename;
-            oldFiles.push(selectedModpack.thumbnail);
-          }
+            updatedModpack[key] = value;
         }
 
-        if (updatedModpack.modpack === "" ) {
-          oldFiles.push(selectedModpack.modpack);
+        if (req.files && req.files.find(file => file.fieldname === 'thumbnail')) {
+            updatedModpack.thumbnail = req.files.find(file => file.fieldname === 'thumbnail').filename;
         }
-        if (updatedModpack.thumbnail === "" ) {
-          oldFiles.push(selectedModpack.thumbnail);
-        }
-        
+
         await Modpack.updateOne({ id: id }, { $set: updatedModpack });
 
-        await deleteFiles(oldFiles, uploadsPath);
-
-        res.status(201).json({ message: 'Modpack updated successfully' });
+        res.status(200).json({ message: 'Modpack updated successfully' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Erroring updating modpack' });
+        res.status(500).json({ message: 'Error updating modpack' });
     }
+});
 
-  });
-  
-  // Download modpack
-  router.get('/:id', async (req, res) => {
+
+// Download modpack
+router.get('/:modpackId/versions/:versionId', async (req, res) => {
+    const modpackId = req.params.modpackId;
+    const versionId = req.params.versionId;
+
+    try {
+        const selectedModpack = await Modpack.findOne({ id: modpackId });
+        if (!selectedModpack) {
+            return res.status(404).json({ message: 'Modpack not found' });
+        }
+
+        const selectedVersion = selectedModpack.versions.find(version => version.id === versionId);
+        if (!selectedVersion) {
+            return res.status(404).json({ message: 'Version not found' });
+        }
+
+        const versionFlePath = path.join(uploadsPath, selectedVersion.zip);
+
+        console.log(versionFlePath);
+        if (fs.existsSync(versionFlePath)) {
+
+            res.setHeader('Content-Disposition', `attachment; filename=${selectedVersion.zip}`);
+            res.setHeader('Content-Type', 'application/octet-stream');
+
+            const fileStream = fs.createReadStream(versionFlePath);
+            fileStream.pipe(res);
+        } else {
+            res.status(404).json({ message: 'File not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error downloading modpack version' });
+    }
+});
+
+router.delete('/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
+        const packToDelete = await Modpack.findOne({ id: id });
 
-      const selectedModpack =  await Modpack.findOne({ id: id });
-      const modpack = selectedModpack.modpack;
-      const filePath = path.join(uploadsPath, modpack);
-      if (fs.existsSync(filePath)) {
-  
-        res.setHeader( 'Content-Disposition', `attachment; filename=${modpack}` );
-        res.setHeader( 'Content-Type', 'application/octet-stream' );
-    
-        const fileStream = fs.createReadStream(filePath);
-        fileStream.pipe(res);
-      } else {
-        res.status(404).json({ message: 'File not found' });
-      }    
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error downloading modpack' });
-    }
-  
-  });
-  
-  // Delete modpack
-  router.delete('/:id', async (req, res) => {
-    const id = req.params.id;
-    
-    try {
-  
-      const packToDelete = await Modpack.findOne({ id: id});
+        if (!packToDelete) {
+            return res.status(404).json({ message: 'Modpack not found' });
+        }
 
-      if (!packToDelete) {
-        return res.status(404).json({ message: 'Modpack not found' });
-      }
+        let filesToDelete = [];
+        for (const version of packToDelete.versions) {
+            if (version.zip) {
+                filesToDelete.push(version.zip);
+            }
+        }
 
-      await Modpack.deleteOne(packToDelete);
+        if (packToDelete.thumbnail !== "") {
+            filesToDelete.push(packToDelete.thumbnail);
+        }
 
-      let filesToDelete = [];
+        await Modpack.deleteOne({ id: id });
 
-      if (packToDelete.modpack !== "" ) {
-        filesToDelete.push(packToDelete.modpack);
-      }
-      if (packToDelete.thumbnail !== "" ) {
-        filesToDelete.push(packToDelete.thumbnail);
-      }
+        await deleteFiles(filesToDelete, uploadsPath);
 
-      await deleteFiles(filesToDelete, uploadsPath);
-      
-      res.status(200).json({ message: 'Deleted modpack successfully' });
+        res.status(200).json({ message: 'Deleted modpack successfully' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error deleting modpack' });
     }
-  
-  });
+});
 
-  module.exports = router;
-  
+
+module.exports = router;

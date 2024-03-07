@@ -1,7 +1,7 @@
 .create-modpack {
     display: flex;
     flex-direction: column;
-    width: 606px;
+    width: fit-content;
     height: fit-content;
     background: #0c0c0c;
     padding: 1.2rem;
@@ -15,62 +15,31 @@
     font-weight: bold;
 }
 
-.create-modpack-header, .create-modpack-info-inputs-headers, .create-modpack-description-header, .create-modpack-file-upload-header {
-    margin-bottom: 1.5%;
-    font-size: 20px;
-}
-
 .create-modpack-info {
     display: flex;
     flex-direction: row;
     align-items: center;
     width: fit-content;
     height: fit-content;
+    gap: 10px;
 }
 
 .create-modpack-info-container {
+    align-self: self-start;
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 3%;
 }
 
-.create-modpack-info-inputs {
-    display: flex;
-    flex-direction: row;
-    padding-right: 2%;
-}
-
-.create-modpack-info-inputs-container {
-    display: flex;
-    flex-direction: column;
-    margin: 3%;
-}
-
-.create-modpack-info-inputs-headers-container {
-    display: flex;
-    flex-direction: row;
-    align-items: top;
-    gap: 15%;
-}
-
-.create-modpack-info-inputs-headers-container img:hover {
-    cursor: pointer;
-}
-
-.create-modpack-info-inputs-headers {
-    justify-self: start;
-    font-family: var(--font-family);
+.create-modpack-info-inputs-headers, .create-modpack-description-header {
+    margin-bottom: 1.5%;
     font-size: 20px;
-    padding: 0;
-    margin: 0;
-    margin-bottom: 2%;
 }
 
 .create-modpack-description {
     margin-bottom: 2.5%;
-}
-
-.create-modpack-file-upload {
-    height: 100%;
 }
 
 .create-modpack-buttons {

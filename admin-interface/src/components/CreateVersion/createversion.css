@@ -1,0 +1,52 @@
+.create-version {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    height: fit-content;
+    background: #0c0c0c;
+    align-items: left;
+    padding: 1.2rem;
+    border-radius: 10px;
+    gap: 10px;
+    
+}
+
+.create-version-header {
+    font-family: var(--font-family);
+    margin: 0;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.create-version-info-inputs-headers, .create-version-file-upload-header {
+    margin-bottom: 2.5%;
+    font-size: 20px;
+}
+
+.create-version-info-inputs-headers-container {
+    display: flex;
+    flex-direction: row;
+    align-items: top;
+    gap: 10px;
+}
+.create-version-info-inputs-headers-img:hover {
+    cursor: pointer;
+}
+
+.create-version-description {
+    margin-bottom: 2.5%;
+}
+
+.create-version-file-upload {
+    height: 100%;
+    width: 330px;
+}
+
+.create-version-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 5%;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding-top: 4%;
+}

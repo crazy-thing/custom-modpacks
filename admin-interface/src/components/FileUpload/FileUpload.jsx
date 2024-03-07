@@ -4,16 +4,10 @@ import { UploadedFile } from '../exports';
 import './fileupload.css';
 
 
-const FileUpload = ({ onChange, modpack }) => {
+const FileUpload = ({ onChange, version, isEdit, isEditVersion }) => {
     const [isDragging, setIsDragging] = useState(false);
-    const [uploadedModpack, setUploadedModpack] = useState({
-        name: '',
-        version: '',
-        mcVersion: '',
-        fabricVersion: '',
-        description: '',
-        thumbnail: '',
-        modpack: '',
+    const [uploadedVersion, setUploadedVersion] = useState({
+        zip: '',
         size: '',
     });
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -31,17 +25,19 @@ const FileUpload = ({ onChange, modpack }) => {
         e.preventDefault();
     };
 
-    const handleModpack = (modpack) => {
-        if (!modpack.name.toLowerCase().endsWith('.zip')) {
+    const handleVersion = (newVersion) => {
+        if (!newVersion.name.toLowerCase().endsWith('.zip')) {
             console.error('Invalid file type. Please upload a ZIP file.');
             return;
         }
-        setUploadedModpack({
-            modpack: modpack.name,
-            size: modpack.size,
+        setUploadedVersion({
+            zip: newVersion.name,
+            size: newVersion.size,
         });
-        onChange('modpack', modpack);
-        onChange('size', modpack.size);
+        console.log(version);
+        onChange('zipFile', newVersion);
+        onChange('zip', newVersion.name);
+        onChange('size', newVersion.size);
         const reader = new FileReader();
         reader.onprogress = (event) => {
             if (event.lengthComputable) {
@@ -52,52 +48,58 @@ const FileUpload = ({ onChange, modpack }) => {
         reader.onloadend = () => {
             console.log('Reading finished');
         };
-        reader.readAsDataURL(modpack);
+        reader.readAsDataURL(newVersion);
     };
 
     const handleDrop = (event) => {
         event.preventDefault();
         setIsDragging(false);
         const files = event.dataTransfer.files;
-        handleModpack(files[0]);
+        handleVersion(files[0]);
     };
 
     const handleFileInputChange = (event) => {
         const files = event.target.files;
-        handleModpack(files[0]);
+        handleVersion(files[0]);
     };
 
     const handleClick = () => {
         fileInputRef.current.click();
     };
 
-    const removeModpack = () => {
+    const removeVersion = () => {
+        checkForEdit();
         setUploadProgress(0);
-        setUploadedModpack({
-            name: '',
-            version: '',
-            mcVersion: '',
-            fabricVersion: '',
-            description: '',
-            thumbnail: '',
-            modpack: '',
+        setUploadedVersion({
+            zip: '',
             size: '',
         });
-        onChange('modpack', '');
+        onChange('zip', '');
         onChange('size', '');
     };
 
-    useEffect(() => {
-        if (modpack) {
-            setUploadedModpack(modpack);
+    const checkForEdit = () => {
+        if (isEditVersion && version.zip !== '') {
+            setUploadedVersion({
+                zip: version.zip,
+                size: version.size,
+            });
             setUploadProgress(100);
         }
-    }, [modpack]);
+        else {
+            setUploadProgress(0);
+        }       
+    }
+
+    useEffect(() => {
+        checkForEdit();
+    }, [version]);
+
 
     return (
         <>
             {uploadProgress > 0 ? (
-                <UploadedFile uploadedModpack={uploadedModpack} removeModpack={removeModpack} progress={uploadProgress} />
+                <UploadedFile uploadedVersion={uploadedVersion} removeVersion={removeVersion} progress={uploadProgress} isEdit={isEdit} />
             ) : (
                 <div
                     className={`file-upload ${isDragging ? 'dragging' : ''}`}

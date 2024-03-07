@@ -4,12 +4,18 @@ const createFormData = (modpack) => {
     formData.append('name', modpack.name);
     formData.append('version', modpack.version);
     formData.append('description', modpack.description);
-    formData.append('mcVersion', modpack.mcVersion);
-    formData.append('modLoader', modpack.modLoader);
-    formData.append('modName', modpack.modName);
-    formData.append('modpack', modpack.modpack);
-    formData.append('thumbnail', modpack.thumbnail);
-    formData.append('size', modpack.size);
+    formData.append('thumbnail', modpack.thumbnail); // Append the file with a name
+    modpack.versions.forEach((version, index) => {
+        console.log(version);
+        formData.append(`versions[${index}][name]`, version.name);
+        formData.append(`versions[${index}][id]`, version.id);
+        formData.append(`versions[${index}][zip]`, version.zip); // Append the file with a name
+        formData.append(`versions[${index}][zipFile]`, version.zipFile);
+        formData.append(`versions[${index}][size]`, version.size);
+        formData.append(`versions[${index}][mcVersion]`, version.mcVersion);
+        formData.append(`versions[${index}][modLoader]`, version.modLoader);
+        formData.append(`versions[${index}][modName]`, version.modName);
+    });
 
     return formData;
 };

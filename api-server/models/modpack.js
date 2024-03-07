@@ -1,33 +1,21 @@
 const mongoose = require('mongoose');
 
-const modpackSchema = new mongoose.Schema({
-    id: {
-        type: String,
-        required: true,
-    },
+const versionSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
     },
-    description: {
-        type: String,
-        required: false,
-    },
-    version: {
+    id: {
         type: String,
         required: true,
     },
-    thumbnail: {
-        type: String,
-        required: true,
-    },
-    modpack: {
+    zip: {
         type: String,
         required: true,
     },
     size: {
         type: String,
-        required: false,
+        required: true,
     },
     mcVersion: {
         type: String,
@@ -41,6 +29,26 @@ const modpackSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+});
+
+const modpackSchema = new mongoose.Schema({
+    id: {
+        type: String,
+        required: true,
+    },
+    name: {
+        type: String,
+        required: true,
+    },
+    description: {
+        type: String,
+        required: false,
+    },
+    thumbnail: {
+        type: String,
+        required: true,
+    },
+    versions: [versionSchema],
 });
 
 const Modpack = mongoose.model('Modpack', modpackSchema);

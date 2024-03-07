@@ -1,6 +1,7 @@
 export {default as Button} from './Button/Button';
 export {default as ConfirmDelete} from './ConfirmDelete/ConfirmDelete';
 export {default as CreateModpack} from './CreateModpack/CreateModpack';
+export {default as CreateVersion} from './CreateVersion/CreateVersion';
 export {default as DropDown} from './DropDown/DropDown';
 export {default as FileUpload} from './FileUpload/FileUpload';
 export {default as ImageUpload} from './ImageUpload/ImageUpload';
