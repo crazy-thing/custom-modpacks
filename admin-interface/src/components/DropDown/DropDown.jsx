@@ -1,8 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './dropdown.css';
+import { deleteIcon } from '../../assets/exports';
+import { ConfirmDelete } from '../exports';
 
-const DropDown = ({ width = 'auto', height = 'auto', fontSize = 'inherit', options = [], value, onChange, isVersions, versions, toggleShowCreateVersion }) => {
+const DropDown = ({ width = 'auto', height = 'auto', fontSize = 'inherit', options = [], value, onChange, modpack, isVersions, versions, toggleShowCreateVersion, baseUrl, handleInputChange }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+    const [selectedVersion, setSelectedVersion] = useState({});
     const dropDownRef = useRef(null);
 
     const handleOptionsClick = (option) => {
@@ -14,6 +18,18 @@ const DropDown = ({ width = 'auto', height = 'auto', fontSize = 'inherit', optio
         }
         onChange(option);
         setIsOpen(false);
+    };
+    
+    const toggleShowConfirmDelete = (event, version = null, newVersions = null) => {
+        event.stopPropagation();
+        if (version !== null) {
+            setSelectedVersion(version);
+        } 
+        if (newVersions !== null) {
+            handleInputChange('versions', newVersions);
+            console.log("changed versions to: ", newVersions);
+        }
+        setShowConfirmDelete(!showConfirmDelete);
     };
 
     const dropDownBoxStyle = {
@@ -37,6 +53,17 @@ const DropDown = ({ width = 'auto', height = 'auto', fontSize = 'inherit', optio
 
     return (
         <>
+        {showConfirmDelete && (
+            <ConfirmDelete 
+                isVersions={isVersions}
+                toggleShowConfirmDelete={toggleShowConfirmDelete}
+                selectedModpack={modpack}
+                selectedVersion={selectedVersion}
+                versions={versions}
+                baseUrl={baseUrl}
+            />
+        )}
+
         {isVersions ? ( 
             <div className={`dropdown ${isOpen ? 'open' : ''}`} style={dropDownBoxStyle} ref={dropDownRef} onClick={() => setIsOpen(!isOpen)}>
             <div className='dropdown-selected-option'>
@@ -51,6 +78,7 @@ const DropDown = ({ width = 'auto', height = 'auto', fontSize = 'inherit', optio
                         onClick={() => toggleShowCreateVersion(version)}
                     >
                         {version.name}
+                        <img src={deleteIcon} width={20} height={20} onClick={(event) => toggleShowConfirmDelete(event, version)} />
                     </div>
                 ))}
             </div>

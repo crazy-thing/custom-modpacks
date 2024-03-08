@@ -2,7 +2,7 @@ import React from 'react';
 import { InputBox, ImageUpload, Button, DropDown} from '../exports';
 import './createmodpack.css';
 
-const CreateModpack = ({ close, modpack, isEdit, uploadsUrl, toggleShowCreateVersion, handleInputChange, handleCreate }) => {
+const CreateModpack = ({ close, modpack, isEdit, uploadsUrl, toggleShowCreateVersion, handleInputChange, handleCreate, baseUrl }) => {
   const expressServerAdd = uploadsUrl;
 
   return (
@@ -31,7 +31,10 @@ const CreateModpack = ({ close, modpack, isEdit, uploadsUrl, toggleShowCreateVer
                 fontSize='16px'
                 versions={modpack.versions}
                 isVersions={true}
+                modpack={modpack}
                 toggleShowCreateVersion={toggleShowCreateVersion}
+                baseUrl={baseUrl}
+                handleInputChange={handleInputChange}
               />
               <Button width={194} height={20} text='Add Version' fontSize='14px' type='confirm' onClick={toggleShowCreateVersion} />
 

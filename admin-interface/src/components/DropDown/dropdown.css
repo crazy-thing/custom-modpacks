@@ -47,8 +47,12 @@
 }
 
 .dropdown-options-option {
+    display: flex;
     margin: 0;
     padding: 5%;
+
+    align-items: center;
+    justify-content: space-between;
 }
 
 .dropdown-options-option:hover {

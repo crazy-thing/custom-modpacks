@@ -7,8 +7,6 @@ import { readConfig } from './util/configReader';
 // Context menu
 // Download packs
 
-// fix not being able to edit pack on first creation
-
 function App() {
   const [showCreateModpack, setShowCreateModpack] = useState(false);
   const [showCreateVersion, setShowCreateVersion] = useState(false);
@@ -227,6 +225,7 @@ function App() {
             toggleShowCreateVersion={toggleShowCreateVersion}
             handleInputChange={handleInputChange}
             handleCreate={handleCreate}
+            baseUrl={baseUrl}
           />
         </div>
       )}
@@ -244,9 +243,7 @@ function App() {
       )}
 
       {showConfirmDelete && (
-        <div className="popup-overlay">
           <ConfirmDelete toggleShowConfirmDelete={toggleShowConfirmDelete} deletePack={deletePack} selectedModpack={selectedModpack} />
-        </div>
       )}
 
       <div className="app-modpacks">

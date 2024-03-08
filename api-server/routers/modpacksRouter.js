@@ -87,14 +87,32 @@ router.put('/:id', upload.any([
         const updatedModpack = {};
 
         for (const [key, value] of Object.entries(req.body)) {
-            updatedModpack[key] = value;
+                updatedModpack[key] = value;
         }
+
+        if (req.body.versions === 'empty') {
+            updatedModpack.versions = [];
+        }
+
+        const versionsToDelete = [];
+        if (updatedModpack.versions && selectedModpack.versions) {
+            for (const selectedVersion of selectedModpack.versions) {
+                console.log(selectedVersion.zip);
+                const matchedVersion = updatedModpack.versions.find(version => version.zip === selectedVersion.zip);
+                if (!matchedVersion) {
+                    versionsToDelete.push(selectedVersion.zip);
+                }
+            }
+        }
+
 
         if (req.files && req.files.find(file => file.fieldname === 'thumbnail')) {
             updatedModpack.thumbnail = req.files.find(file => file.fieldname === 'thumbnail').filename;
+            versionsToDelete.push(selectedModpack.thumbnail);
         }
 
         await Modpack.updateOne({ id: id }, { $set: updatedModpack });
+        await deleteFiles(versionsToDelete, uploadsPath);
 
         res.status(200).json({ message: 'Modpack updated successfully' });
     } catch (error) {
@@ -168,6 +186,42 @@ router.delete('/:id', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error deleting modpack' });
+    }
+});
+
+router.delete('/:modpackId/versions/:versionId', async ( req, res ) => {
+    const modpackId = req.params.modpackId;
+    const versionId = req.params.versionId;
+
+    try {
+        const selectedModpack = await Modpack.findOne({ id: modpackId });
+        if (!selectedModpack) {
+            return res.status(404).json({ message: 'Modpack not found' });
+        }
+
+        const selectedVersion = selectedModpack.versions.find(version => version.id === versionId);
+        if (!selectedVersion) {
+            return res.status(404).json({ message: 'Version not found' });
+        }
+
+        const versionIndex = selectedModpack.versions.findIndex(version => version.id === versionId);
+        if (versionIndex === -1) {
+            return res.status(404).json({ message: 'Version not found' });
+        }
+        
+        selectedModpack.versions.splice(versionIndex, 1);
+
+        const filesToDelete = [selectedVersion.zip];
+
+        await deleteFiles(filesToDelete, uploadsPath);
+
+
+        await selectedModpack.save();
+
+        res.status(200).json({ message: 'Version deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error deleting version' });
     }
 });
 

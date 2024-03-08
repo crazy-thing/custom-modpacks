@@ -4,18 +4,22 @@ const createFormData = (modpack) => {
     formData.append('name', modpack.name);
     formData.append('version', modpack.version);
     formData.append('description', modpack.description);
-    formData.append('thumbnail', modpack.thumbnail); // Append the file with a name
-    modpack.versions.forEach((version, index) => {
-        console.log(version);
-        formData.append(`versions[${index}][name]`, version.name);
-        formData.append(`versions[${index}][id]`, version.id);
-        formData.append(`versions[${index}][zip]`, version.zip); // Append the file with a name
-        formData.append(`versions[${index}][zipFile]`, version.zipFile);
-        formData.append(`versions[${index}][size]`, version.size);
-        formData.append(`versions[${index}][mcVersion]`, version.mcVersion);
-        formData.append(`versions[${index}][modLoader]`, version.modLoader);
-        formData.append(`versions[${index}][modName]`, version.modName);
-    });
+    formData.append('thumbnail', modpack.thumbnail); 
+
+    if (modpack.versions.length === 0) {
+        formData.append('versions', 'empty'); 
+    } else {
+        modpack.versions.forEach((version, index) => {
+            formData.append(`versions[${index}][name]`, version.name);
+            formData.append(`versions[${index}][id]`, version.id);
+            formData.append(`versions[${index}][zip]`, version.zip); 
+            formData.append(`versions[${index}][zipFile]`, version.zipFile);
+            formData.append(`versions[${index}][size]`, version.size);
+            formData.append(`versions[${index}][mcVersion]`, version.mcVersion);
+            formData.append(`versions[${index}][modLoader]`, version.modLoader);
+            formData.append(`versions[${index}][modName]`, version.modName);
+        });
+    }
 
     return formData;
 };
@@ -93,3 +97,20 @@ export const deleteModpack = async (modpack, baseUrl) => {
         throw error;
     }
 };
+
+export const deleteVersion = async (modpackId, versionId, baseUrl) => {
+    try {
+        const res = await fetch(`${baseUrl}/${modpackId}/versions/${versionId}`, {
+            method: 'DELETE',
+        });
+
+        if (!res.ok) {
+            throw new Error(`Failed to delete version with ID: ${versionId}`);
+        }
+
+        return res.json();
+    } catch (error) {
+        console.error('Error deleting version: ', error);
+        throw error;
+    }
+}
